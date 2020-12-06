@@ -22,8 +22,10 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
     - run: make
-    - run: tar cvzf pagingbuffer-${{ github.run_number }}.tar.gz package.json package-lock.json README.md demo/ LICENSE dist/
+    - run: |
+        mkdir parsegraph-pagingbuffer
+        cp -r -t parsegraph-pagingbuffer package.json package-lock.json README.md demo/ LICENSE dist/
     - uses: actions/upload-artifact@v2
       with:
-        name: pagingbuffer-${{ github.run_number }}.tar.gz
-        path: pagingbuffer-${{ github.run_number }}.tar.gz
+        name: parsegraph-pagingbuffer-${{ github.run_number }}
+        path: parsegraph-pagingbuffer
