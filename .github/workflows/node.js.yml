@@ -23,9 +23,8 @@ jobs:
     - run: npm ci
     - run: make
     - run: |
-        mkdir parsegraph-pagingbuffer
-        cp -r -t parsegraph-pagingbuffer package.json package-lock.json README.md demo/ LICENSE dist/
+        tar cvzf parsegraph-pagingbuffer.tar.gz package.json package-lock.json README.md demo/ LICENSE dist/
     - uses: actions/upload-artifact@v2
       with:
         name: parsegraph-pagingbuffer-${{ github.run_number }}
-        path: parsegraph-pagingbuffer
+        path: parsegraph-pagingbuffer.tar.gz
