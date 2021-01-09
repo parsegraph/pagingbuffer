@@ -2,12 +2,31 @@
 
 import BufferPage from "./BufferPage";
 
+class Attribute {
+  name:string;
+  numComponents:number;
+  drawMode:number;
+  location:number;
+
+  constructor(name:string, numComponents:number, drawMode:number) {
+    this.name = name;
+    this.numComponents = numComponents;
+    this.drawMode = drawMode;
+  }
+}
+
 /*
  * Manages the low-level paging of vertex attributes. For
  * demonstrations of use, see any painter class.
  */
 export default class PagingBuffer {
-  constructor(gl, program) {
+  _gl:WebGLRenderingContext;
+  _pages:BufferPage[];
+  _currentPage:number;
+  _program:WebGLProgram;
+  _attribs:Attribute[];
+
+  constructor(gl:WebGLRenderingContext, program:WebGLProgram) {
     if (!gl) {
       throw new Error("gl must be provided");
     }
@@ -39,7 +58,7 @@ export default class PagingBuffer {
     return false;
   }
 
-  addPage(renderFunc, renderFuncThisArg) {
+  addPage(renderFunc:Function, renderFuncThisArg?:object) {
     ++this._currentPage;
 
     if (this._currentPage < this._pages.length) {
@@ -73,7 +92,7 @@ export default class PagingBuffer {
    * type (1, 2, 3, or 4) drawMode - the WebGL draw mode.
    * Defaults to gl.STATIC_DRAW
    */
-  defineAttrib(name, numComponents, drawMode?) {
+  defineAttrib(name:string, numComponents:number, drawMode?:number) {
     if (drawMode == undefined) {
       drawMode = this._gl.STATIC_DRAW;
     }
@@ -83,12 +102,7 @@ export default class PagingBuffer {
       page.glBuffers.push(null);
     });
 
-    const attrib = {
-      name: name,
-      numComponents: numComponents,
-      drawMode: drawMode,
-    };
-
+    const attrib = new Attribute(name, numComponents, drawMode);
     attrib.location = this._gl.getAttribLocation(this._program, attrib.name);
 
     this._attribs.push(attrib);
@@ -96,19 +110,19 @@ export default class PagingBuffer {
     return this._attribs.length - 1;
   }
 
-  appendRGB(...args) {
+  appendRGB(attribIndex:number, color:any) {
     const page = this.getWorkingPage();
-    return page.appendRGB(...args);
+    return page.appendRGB(attribIndex, color);
   }
 
-  appendRGBA(...args) {
+  appendRGBA(attribIndex:number, color:any) {
     const page = this.getWorkingPage();
-    return page.appendRGBA(...args);
+    return page.appendRGBA(attribIndex, color);
   }
 
-  appendData(...args) {
+  appendData(attribIndex:number, ...args:any) {
     const page = this.getWorkingPage();
-    return page.appendData(...args);
+    return page.appendData(attribIndex, ...args);
   }
 
   /*
@@ -117,7 +131,7 @@ export default class PagingBuffer {
   clear() {
     // Clear the buffers for all pages.
     this._pages.forEach(function (page) {
-      this._attribs.forEach(function (attrib, attribIndex) {
+      this._attribs.forEach(function (_:Attribute, attribIndex:number) {
         // if(page.glBuffers[attribIndex] != null) {
         // this._gl.deleteBuffer(page.glBuffers[attribIndex]);
         // page.glBuffers[attribIndex] = null;
@@ -155,10 +169,10 @@ export default class PagingBuffer {
         return;
       }
 
-      let numIndices;
+      let numIndices:number;
 
       // Prepare each vertex attribute.
-      this._attribs.forEach(function (attrib, attribIndex) {
+      this._attribs.forEach(function (attrib:Attribute, attribIndex:number) {
         if (attrib.location == -1) {
           return;
         }
@@ -228,6 +242,6 @@ export default class PagingBuffer {
   }
 }
 
-export function createPagingBuffer(gl, program) {
+export function createPagingBuffer(gl:WebGLRenderingContext, program:WebGLProgram) {
   return new PagingBuffer(gl, program);
 }

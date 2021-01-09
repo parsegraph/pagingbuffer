@@ -1,12 +1,18 @@
-/* eslint-disable require-jsdoc */
+import PagingBuffer from './pagingbuffer';
 
 export default class BufferPage {
-  constructor(pagingBuffer, renderFunc, renderFuncThisArg) {
+  id:number;
+  buffers:any[];
+  glBuffers:any[];
+  needsUpdate:boolean;
+  renderFunc:Function;
+  renderFuncThisArg:object;
+  constructor(pagingBuffer:PagingBuffer, renderFunc?:Function, renderFuncThisArg?:object) {
     if (!renderFuncThisArg) {
       renderFuncThisArg = this;
     }
     if (!renderFunc) {
-      renderFunc = function (gl, numIndices) {
+      renderFunc = function (gl:WebGLRenderingContext, numIndices:number) {
         // console.log("Drawing " + numIndices + " indices");
         gl.drawArrays(gl.TRIANGLES, 0, numIndices);
       };
@@ -45,7 +51,7 @@ export default class BufferPage {
    * Adds each of the specified values to the working buffer. If the value is an
    * array, each of its internal values are added.
    */
-  appendData(attribIndex, ...args) {
+  appendData(attribIndex:number, ...args:any[]) {
     // Ensure attribIndex points to a valid attribute.
     if (attribIndex < 0 || attribIndex > this.buffers.length - 1) {
       throw new Error("attribIndex is out of range. Given: " + attribIndex);
@@ -59,10 +65,10 @@ export default class BufferPage {
      * @param {Function|Array|number} value either a function, Array, or number.
      * @return {number} the number of added values
      */
-    const appendValue = (value) => {
+    const appendValue = (value:any) => {
       let numAdded = 0;
       if (typeof value.forEach == "function") {
-        value.forEach(function (x) {
+        value.forEach(function (x:number|number[]) {
           numAdded += appendValue(x);
         }, this);
         return numAdded;
@@ -90,14 +96,14 @@ export default class BufferPage {
     return cumulativeAdded;
   }
 
-  appendRGB(attribIndex, color) {
+  appendRGB(attribIndex:number, color:any) {
     if (typeof color.r == "function") {
       return this.appendData(attribIndex, color.r(), color.g(), color.b());
     }
     return this.appendData(attribIndex, color.r, color.g, color.b);
   }
 
-  appendRGBA(attribIndex, color) {
+  appendRGBA(attribIndex:number, color:any) {
     if (typeof color.r == "function") {
       return this.appendData(
         attribIndex,

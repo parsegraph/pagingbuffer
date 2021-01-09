@@ -1,8 +1,9 @@
 {
   "name": "parsegraph-pagingbuffer",
-  "version": "1.4.7",
+  "version": "1.4.8",
   "description": "Method to populate WebGL buffers during painting",
   "main": "dist/pagingbuffer.js",
+  "types": "dist/pagingbuffer.d.ts",
   "scripts": {
     "coverage": "nyc npm run test",
     "test": "mocha -r @babel/register -r jsdom-global/register --recursive",
@@ -53,6 +54,7 @@
     "prettier": "2.1.2",
     "source-map-loader": "^1.0.2",
     "source-map-support": "^0.5.19",
+    "ts-loader": "^8.0.12",
     "ts-node": "^9.0.0",
     "ts-shader-loader": "^1.0.6",
     "typescript": "^4.0.2",
