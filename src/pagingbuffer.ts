@@ -58,7 +58,7 @@ export default class PagingBuffer {
     return false;
   }
 
-  addPage(renderFunc:Function, renderFuncThisArg?:object) {
+  addPage(renderFunc?:Function, renderFuncThisArg?:object) {
     ++this._currentPage;
 
     if (this._currentPage < this._pages.length) {
