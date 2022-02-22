@@ -1,8 +1,15 @@
 DIST_NAME = pagingbuffer
 
 SCRIPT_FILES = \
-	src/index.ts \
+	src/Attribute.ts \
 	src/BufferPage.ts \
-	src/demo.ts
+	src/demo.ts \
+	src/index.ts \
+	src/PageGroup.ts \
+	src/PagingBuffer.ts
+
+EXTRA_SCRIPTS = \
+	src/frag.glsl \
+	src/vert.glsl
 
 include ./Makefile.microproject
