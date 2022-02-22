@@ -4,6 +4,7 @@ SCRIPT_FILES = \
 	src/Attribute.ts \
 	src/BufferPage.ts \
 	src/demo.ts \
+	src/doc.ts \
 	src/index.ts \
 	src/PageGroup.ts \
 	src/PagingBuffer.ts
