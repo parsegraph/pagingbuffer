@@ -123,12 +123,24 @@ export default class PagingBuffer implements PageGroup {
 
   appendRGB(attribIndex: number | string, color: any) {
     const page = this.getWorkingPage();
-    return page.appendRGB(attribIndex, color);
+    if (typeof color.r == "function") {
+      return page.appendData(attribIndex, color.r(), color.g(), color.b());
+    }
+    return page.appendData(attribIndex, color.r, color.g, color.b);
   }
 
   appendRGBA(attribIndex: number | string, color: any) {
     const page = this.getWorkingPage();
-    return page.appendRGBA(attribIndex, color);
+    if (typeof color.r == "function") {
+      return page.appendData(
+        attribIndex,
+        color.r(),
+        color.g(),
+        color.b(),
+        color.a()
+      );
+    }
+    return page.appendData(attribIndex, color.r, color.g, color.b, color.a);
   }
 
   appendData(attribIndex: number | string, ...args: any) {
@@ -138,7 +150,8 @@ export default class PagingBuffer implements PageGroup {
 
   append1D(attribIndex: number | string, val: number) {
     const page = this.getWorkingPage();
-    return page.appendData(attribIndex, val);
+    page.appendValue(attribIndex, val);
+    return 1;
   }
 
   appendValue(attribIndex: number | string, val: number) {

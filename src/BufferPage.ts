@@ -86,14 +86,7 @@ export default class BufferPage {
     return this._pg;
   }
 
-  /*
-   * appendData(attribIndex, value1, value2, ...);
-   * appendData(attribIndex, valueArray);
-   *
-   * Adds each of the specified values to the working buffer. If the value is an
-   * array, each of its internal values are added.
-   */
-  appendData(attribIndexOrStr: number | string, ...args: any[]) {
+  private parseIndex(attribIndexOrStr: number | string):number {
     let attribIndex: number;
     if (typeof attribIndexOrStr === "string") {
       if (!isNaN(parseInt(attribIndexOrStr, 10))) {
@@ -111,27 +104,44 @@ export default class BufferPage {
     if (typeof attribIndex !== "number") {
       throw new Error("attribIndex must be a number.");
     }
+    return attribIndex;
+  }
 
-    const appendValue = (value: any) => {
-      let numAdded = 0;
-      if (typeof value.forEach == "function") {
-        value.forEach(function (x: number | number[]) {
-          numAdded += appendValue(x);
-        }, this);
-        return numAdded;
-      }
-      if (typeof value.length == "number") {
-        for (let i = 0; i < value.length; ++i) {
-          numAdded += appendValue(value[i]);
-        }
-        return numAdded;
-      }
+  appendValue(attribIndexOrStr: number | string, value: number) {
+    const attribIndex = this.parseIndex(attribIndexOrStr);
       if (Number.isNaN(value) || typeof value != "number") {
         throw new Error("Value is not a number: " + value);
       }
       this._buffers[attribIndex].push(value);
       this._needsUpdate = true;
+  }
 
+  /*
+   * appendData(attribIndex, value1, value2, ...);
+   * appendData(attribIndex, valueArray);
+   *
+   * Adds each of the specified values to the working buffer. If the value is an
+   * array, each of its internal values are added.
+   */
+  appendData(attribIndexOrStr: number | string, ...args: any[]) {
+    const appendValue = (value: any) => {
+      let numAdded = 0;
+      if (typeof value !== "number") {
+        if (typeof value.forEach == "function") {
+          value.forEach(function (x: number | number[]) {
+            numAdded += appendValue(x);
+          }, this);
+          return numAdded;
+        }
+        if (typeof value.length == "number") {
+          for (let i = 0; i < value.length; ++i) {
+            numAdded += appendValue(value[i]);
+          }
+          return numAdded;
+        }
+        throw new Error("Value must be reduced to a number, got " + typeof value);
+      }
+      this.appendValue(attribIndexOrStr, value as number);
       return 1;
     };
 
@@ -141,26 +151,6 @@ export default class BufferPage {
       cumulativeAdded += appendValue(args[i]);
     }
     return cumulativeAdded;
-  }
-
-  appendRGB(attribIndex: number | string, color: any) {
-    if (typeof color.r == "function") {
-      return this.appendData(attribIndex, color.r(), color.g(), color.b());
-    }
-    return this.appendData(attribIndex, color.r, color.g, color.b);
-  }
-
-  appendRGBA(attribIndex: number | string, color: any) {
-    if (typeof color.r == "function") {
-      return this.appendData(
-        attribIndex,
-        color.r(),
-        color.g(),
-        color.b(),
-        color.a()
-      );
-    }
-    return this.appendData(attribIndex, color.r, color.g, color.b, color.a);
   }
 
   render() {
