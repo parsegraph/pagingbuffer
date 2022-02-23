@@ -4,6 +4,12 @@ import vertShaderSource from "./vert.glsl";
 import fragShaderSource from "./frag.glsl";
 import Color from "parsegraph-color";
 
+const minTrailers = 100;
+const TRAILER_SIZE = 100;
+const interval = 6000;
+const intervalMargin = 1000;
+const trailerDecay = 1.0;
+
 document.addEventListener("DOMContentLoaded", () => {
   const root = document.getElementById("demo");
   root.style.position = "relative";
@@ -51,12 +57,8 @@ document.addEventListener("DOMContentLoaded", () => {
   pg.defineAttrib("size", 1);
   pg.defineAttrib("startTime", 1);
 
-  const interval = 6000;
-
   let playing: Date = null;
   let lastPos: [number, number, Color] = [0, 0, new Color(1, 1, 1, 1)];
-
-  const trailerDecay = 1.2;
 
   const fullStart = Date.now();
 
@@ -65,12 +67,12 @@ document.addEventListener("DOMContentLoaded", () => {
     pg.addPage();
 
     const addTrailer = (startX: number, startY: number, color: Color) => {
-      const size = Math.floor(2 + 100 * Math.random());
+      const size = Math.floor(2 + TRAILER_SIZE * Math.random());
       const sw = root.clientWidth;
       const sh = root.clientHeight;
       const end = [Math.random() * sw, Math.random() * sh];
       const startTime = Date.now() - fullStart;
-      const duration = trailerDecay * Math.random() * (interval - 1000);
+      const duration = trailerDecay * Math.random() * (interval - intervalMargin);
       [
         [
           [1, 1],
@@ -101,10 +103,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (trailerCanvas.height !== root.clientHeight) {
       trailerCanvas.height = root.clientHeight;
     }
-    const origBG = lastPos[2];
     const newBG = Color.random();
-    // document.body.style.backgroundColor = newBG.asRGBA();
-    document.body.style.backgroundColor = "black";
+    document.body.style.backgroundColor = newBG.asRGBA();
     container.style.color = Color.random().asRGB();
 
     const x = Math.random() * root.clientWidth;
@@ -112,37 +112,52 @@ document.addEventListener("DOMContentLoaded", () => {
     container.style.transform = `translate(${x}px, ${y}px)`;
     container.style.zIndex = "2";
 
-    const minTrailers = 100;
-    const numTrailers = Math.floor(minTrailers * Math.random());
-    if (lastPos) {
-      for (let i = 0; i < minTrailers + numTrailers; ++i) {
-        addTrailer(...lastPos);
+    const makeTrailerPainter = (lastPos:[number, number, Color])=>{
+      const numTrailers = Math.floor(minTrailers * Math.random());
+      if (!lastPos) {
+        return ()=>{
+          return false;
+        }
       }
-    }
-    container.innerHTML = "" + (numTrailers + minTrailers);
+      let i = 0;
+      container.innerHTML = "" + (numTrailers + minTrailers);
+      return ()=>{
+        if (i < minTrailers + numTrailers) {
+          addTrailer(...lastPos);
+          ++i;
+        }
+        return i < minTrailers + numTrailers;
+      };
+    };
+
+    const paintTrailers = makeTrailerPainter(lastPos);
     lastPos = [x, y, newBG];
+    const sw = trailerCanvas.width;
+    const sh = trailerCanvas.height;
+    gl.viewport(0, 0, sw, sh);
     const animate = () => {
       if (!playing) {
         return;
       }
-      const sw = trailerCanvas.width;
-      const sh = trailerCanvas.height;
-      gl.viewport(0, 0, sw, sh);
-      const pct = Math.min(interval, Date.now() - playing.getTime()) / interval;
-      const bg = origBG.interpolate(lastPos[2], pct);
-      gl.clearColor(bg.r(), bg.g(), bg.b(), 0.0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
+      const now = Date.now();
+      while(paintTrailers() && Date.now() - now < 5);
 
+      const pct = Math.min(interval, Date.now() - playing.getTime()) / interval;
       gl.useProgram(prog);
       gl.uniform1f(gl.getUniformLocation(prog, "time"), Date.now() - fullStart);
       gl.uniform1f(gl.getUniformLocation(prog, "aspectRatio"), sw / sh);
       pg.renderPages();
       gl.useProgram(null);
       if (timer && pct < 1) {
-        requestAnimationFrame(animate);
+        animation = requestAnimationFrame(animate);
       }
     };
-    requestAnimationFrame(animate);
+    let animation = requestAnimationFrame(animate);
+
+    return ()=>{
+      cancelAnimationFrame(animation);
+      playing = null;
+    };
   };
 
   const dot = document.createElement("div");
@@ -156,10 +171,10 @@ document.addEventListener("DOMContentLoaded", () => {
   dot.style.backgroundColor = "#222";
   root.appendChild(dot);
 
-  container.style.transition = `color ${interval - 1000}ms, transform ${
-    interval - 1000
-  }ms, top ${interval - 1000}ms`;
-  document.body.style.transition = `background-color ${interval - 1000}ms`;
+  container.style.transition = `color ${interval - intervalMargin}ms, transform ${
+    interval - intervalMargin
+  }ms, top ${interval - intervalMargin}ms`;
+  document.body.style.transition = `background-color ${interval - intervalMargin}ms`;
   let timer: any = null;
   let dotTimer: any = null;
   let dotIndex = 0;
@@ -169,11 +184,16 @@ document.addEventListener("DOMContentLoaded", () => {
     dot.style.backgroundColor = dotState[dotIndex];
   };
   const dotInterval = 500;
+
+  let animationCleaner:()=>void;
   root.addEventListener("click", () => {
     if (timer) {
       clearInterval(timer);
       timer = null;
       clearInterval(dotTimer);
+      if (animationCleaner) {
+        animationCleaner();
+      }
       dotTimer = null;
       dot.style.transition = "background-color 3s";
       dot.style.backgroundColor = "#222";
@@ -181,10 +201,15 @@ document.addEventListener("DOMContentLoaded", () => {
       playing = new Date();
       trailerCanvas.width = root.clientWidth;
       trailerCanvas.height = root.clientHeight;
-      moveContainer();
+      animationCleaner = moveContainer();
       dot.style.transition = "background-color 400ms";
       refreshDot();
-      timer = setInterval(moveContainer, interval);
+      timer = setInterval(()=>{
+        if (animationCleaner) {
+          animationCleaner();
+        }
+        animationCleaner = moveContainer();
+      }, interval);
       dotTimer = setInterval(refreshDot, dotInterval);
     }
   });

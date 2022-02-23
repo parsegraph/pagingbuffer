@@ -14,6 +14,5 @@ void main() {
         discard;
     }
     // Map the two calculated indicators to their colors.
-    highp float a = 1.0 - smoothstep(0.95, 1.0, d);
-    gl_FragColor = vec4(color.rgb, a);
+    gl_FragColor = vec4(color.rgb, 1.0);
 }
