@@ -9,8 +9,7 @@ SCRIPT_FILES =  \
 	src/PagingBuffer.ts \
 	src/Attribute.ts \
 	src/demo.ts \
-	test/test.ts \
-	test/test.js
+	test/test.ts
 
 EXTRA_SCRIPTS =  \
 	src/vert.glsl \
