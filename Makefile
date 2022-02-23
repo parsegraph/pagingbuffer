@@ -1,18 +1,19 @@
 DIST_NAME = pagingbuffer
-DEMO_PORT = 13111
-DEMO_ROOT =
 
-SCRIPT_FILES = \
-	src/Attribute.ts \
+SCRIPT_FILES =  \
 	src/BufferPage.ts \
-	src/demo.ts \
-	src/doc.ts \
-	src/index.ts \
 	src/PageGroup.ts \
-	src/PagingBuffer.ts
+	src/index.ts \
+	src/doc.ts \
+	src/glsl.d.ts \
+	src/PagingBuffer.ts \
+	src/Attribute.ts \
+	src/demo.ts \
+	test/test.ts \
+	test/test.js
 
-EXTRA_SCRIPTS = \
-	src/frag.glsl \
-	src/vert.glsl
+EXTRA_SCRIPTS =  \
+	src/vert.glsl \
+	src/frag.glsl
 
 include ./Makefile.microproject
