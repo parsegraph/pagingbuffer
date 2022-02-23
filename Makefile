@@ -1,4 +1,6 @@
 DIST_NAME = pagingbuffer
+DEMO_PORT = 13111
+DEMO_ROOT =
 
 SCRIPT_FILES = \
 	src/Attribute.ts \
