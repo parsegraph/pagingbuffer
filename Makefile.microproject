@@ -37,8 +37,16 @@ build-prod: $(PROD_LIB)
 .PHONY: build-prod
 
 demo: $(DEST_LIB)
-	cd demo && yarn install && yarn start
+	SITE_PORT=$(DEMO_PORT) cd demo && yarn install && yarn start
 .PHONY: demo
+
+tmux:
+	tmuxify restart $(DEMO_PORT)
+.PHONY: tmux
+
+stop-tmux:
+	tmuxify stop
+.PHONY: stop-tmux
 
 RUN_TEST=npx jest --env=jsdom
 
