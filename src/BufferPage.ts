@@ -86,7 +86,7 @@ export default class BufferPage {
     return this._pg;
   }
 
-  private parseIndex(attribIndexOrStr: number | string):number {
+  private parseIndex(attribIndexOrStr: number | string): number {
     let attribIndex: number;
     if (typeof attribIndexOrStr === "string") {
       if (!isNaN(parseInt(attribIndexOrStr, 10))) {
@@ -109,11 +109,11 @@ export default class BufferPage {
 
   appendValue(attribIndexOrStr: number | string, value: number) {
     const attribIndex = this.parseIndex(attribIndexOrStr);
-      if (Number.isNaN(value) || typeof value != "number") {
-        throw new Error("Value is not a number: " + value);
-      }
-      this._buffers[attribIndex].push(value);
-      this._needsUpdate = true;
+    if (Number.isNaN(value) || typeof value != "number") {
+      throw new Error("Value is not a number: " + value);
+    }
+    this._buffers[attribIndex].push(value);
+    this._needsUpdate = true;
   }
 
   /*
@@ -139,7 +139,9 @@ export default class BufferPage {
           }
           return numAdded;
         }
-        throw new Error("Value must be reduced to a number, got " + typeof value);
+        throw new Error(
+          "Value must be reduced to a number, got " + typeof value
+        );
       }
       this.appendValue(attribIndexOrStr, value as number);
       return 1;

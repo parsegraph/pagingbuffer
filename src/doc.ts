@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
   pg.defineAttrib("size", 1);
   pg.defineAttrib("startTime", 1);
 
-  const refresh = ()=>{
+  const refresh = () => {
     pg.clear();
     pg.addPage();
     const playing = new Date();
@@ -88,10 +88,10 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     };
 
-    const paintTrailers = (()=>{
+    const paintTrailers = (() => {
       const numTrailers = Math.floor(minTrailers * Math.random());
       let i = 0;
-      return ()=>{
+      return () => {
         if (i < minTrailers + numTrailers) {
           const x = Math.random() * root.clientWidth;
           const y = Math.random() * root.clientHeight;
@@ -104,9 +104,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const animate = () => {
       const now = Date.now();
-      while(paintTrailers() && Date.now() - now < 5);
+      while (paintTrailers() && Date.now() - now < 5);
 
-      const pct = Math.min(curInterval + intervalMargin, Date.now() - playing.getTime()) / (curInterval + intervalMargin);
+      const pct =
+        Math.min(curInterval + intervalMargin, Date.now() - playing.getTime()) /
+        (curInterval + intervalMargin);
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
 

@@ -72,7 +72,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const sh = root.clientHeight;
       const end = [Math.random() * sw, Math.random() * sh];
       const startTime = Date.now() - fullStart;
-      const duration = trailerDecay * Math.random() * (interval - intervalMargin);
+      const duration =
+        trailerDecay * Math.random() * (interval - intervalMargin);
       [
         [
           [1, 1],
@@ -112,16 +113,16 @@ document.addEventListener("DOMContentLoaded", () => {
     container.style.transform = `translate(${x}px, ${y}px)`;
     container.style.zIndex = "2";
 
-    const makeTrailerPainter = (lastPos:[number, number, Color])=>{
+    const makeTrailerPainter = (lastPos: [number, number, Color]) => {
       const numTrailers = Math.floor(minTrailers * Math.random());
       if (!lastPos) {
-        return ()=>{
+        return () => {
           return false;
-        }
+        };
       }
       let i = 0;
       container.innerHTML = "" + (numTrailers + minTrailers);
-      return ()=>{
+      return () => {
         if (i < minTrailers + numTrailers) {
           addTrailer(...lastPos);
           ++i;
@@ -140,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       const now = Date.now();
-      while(paintTrailers() && Date.now() - now < 5);
+      while (paintTrailers() && Date.now() - now < 5);
 
       const pct = Math.min(interval, Date.now() - playing.getTime()) / interval;
       gl.useProgram(prog);
@@ -154,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     let animation = requestAnimationFrame(animate);
 
-    return ()=>{
+    return () => {
       cancelAnimationFrame(animation);
       playing = null;
     };
@@ -171,10 +172,14 @@ document.addEventListener("DOMContentLoaded", () => {
   dot.style.backgroundColor = "#222";
   root.appendChild(dot);
 
-  container.style.transition = `color ${interval - intervalMargin}ms, transform ${
+  container.style.transition = `color ${
     interval - intervalMargin
-  }ms, top ${interval - intervalMargin}ms`;
-  document.body.style.transition = `background-color ${interval - intervalMargin}ms`;
+  }ms, transform ${interval - intervalMargin}ms, top ${
+    interval - intervalMargin
+  }ms`;
+  document.body.style.transition = `background-color ${
+    interval - intervalMargin
+  }ms`;
   let timer: any = null;
   let dotTimer: any = null;
   let dotIndex = 0;
@@ -185,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   const dotInterval = 500;
 
-  let animationCleaner:()=>void;
+  let animationCleaner: () => void;
   root.addEventListener("click", () => {
     if (timer) {
       clearInterval(timer);
@@ -204,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
       animationCleaner = moveContainer();
       dot.style.transition = "background-color 400ms";
       refreshDot();
-      timer = setInterval(()=>{
+      timer = setInterval(() => {
         if (animationCleaner) {
           animationCleaner();
         }
