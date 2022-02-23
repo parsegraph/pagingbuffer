@@ -27,7 +27,7 @@ describe("PagingBuffer", function () {
     });
     it("should throw on falsy GL", function () {
       const canvas = new HTMLCanvasElement(500, 500);
-      const gl = canvas.getContext("webgl");
+      canvas.getContext("webgl");
       assert.throws(() => {
         new PagingBuffer(null, 1);
       });
@@ -46,23 +46,22 @@ describe("PagingBuffer", function () {
       const gl = canvas.getContext("webgl");
       const pb = new PagingBuffer(gl, 1);
       pb.addPage(() => {}, null);
-      const a_position = pb.defineAttrib("a_position", 3);
-      pb.appendData(a_position, 1, 0, 0);
-      pb.appendData(a_position, 0, 1, 0);
-      pb.appendData(a_position, 0, 0, 1);
+      const aPosition = pb.defineAttrib("a_position", 3);
+      pb.appendData(aPosition, 1, 0, 0);
+      pb.appendData(aPosition, 0, 1, 0);
+      pb.appendData(aPosition, 0, 0, 1);
     });
     it("fails if given falsy attribute index", function () {
       const canvas = new HTMLCanvasElement(500, 500);
       const gl = canvas.getContext("webgl");
       const pb = new PagingBuffer(gl, 1);
       pb.addPage(() => {}, null);
-      const a_position = pb.defineAttrib("a_position", 3);
-      pb.appendData(a_position, 1, 0, 0);
+      const aPosition = pb.defineAttrib("a_position", 3);
+      pb.appendData(aPosition, 1, 0, 0);
       assert.throws(() => {
         pb.appendData(null, 0, 1, 0);
       });
-      pb.appendData(a_position, 0, 0, 1);
+      pb.appendData(aPosition, 0, 0, 1);
     });
   });
 });
-
