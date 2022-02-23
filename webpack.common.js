@@ -1,5 +1,6 @@
 const path = require("path");
-const { execSync } = require("child_process");
+const { execSync} = require("child_process");
+const { readFileSync } = require("fs");
 
 const DIST_NAME = "pagingbuffer";
 
@@ -17,6 +18,44 @@ const hasShaderFiles = ()=>{
 const hasCSVFiles = ()=>{
   return hasFiles("csv") || hasFiles("tsv") || hasFiles("txt");
 }
+
+const recognizedExternals = {
+  "react":{
+    commonjs:"react",
+    commonjs2:"react",
+    amd:"react",
+    root:"React"
+  },
+  "parsegraph-log":{
+    commonjs:"parsegraph-log",
+    commonjs2:"parsegraph-log",
+    amd:"parsegraph-log",
+    root:"parsegraph_log"
+  },
+  "parsegraph-checkglerror":{
+    commonjs:"parsegraph-checkglerror",
+    commonjs2:"parsegraph-checkglerror",
+    amd:"parsegraph-checkglerror",
+    root:"parsegraph_checkglerror"
+  }
+};
+
+const getPackageJSON = ()=>{
+    return JSON.parse(readFileSync(relDir("package.json")));
+};
+
+const buildExternals = ()=>{
+  const rv = {};
+  const packageJson = getPackageJSON();
+  if (packageJson.peerDependencies) {
+    Object.keys(recognizedExternals).forEach(name=>{
+      if(name in packageJson.peerDependencies) {
+        rv[name] = recognizedExternals[name];
+      }
+    });
+  }
+  return rv;
+};
 
 const webpackConfig = (prod)=>{
   const rules = [
@@ -55,6 +94,7 @@ const webpackConfig = (prod)=>{
   }
 
   return {
+    externals: buildExternals(),
     output: {
       path: relDir(prod ? "dist-prod" : "dist", "src"),
       globalObject: "this",
