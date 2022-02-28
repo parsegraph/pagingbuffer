@@ -1,6 +1,6 @@
 DIST_NAME = pagingbuffer
 
-SCRIPT_FILES =  \
+SCRIPT_FILES = \
 	src/BufferPage.ts \
 	src/PageGroup.ts \
 	src/index.ts \
@@ -11,7 +11,7 @@ SCRIPT_FILES =  \
 	src/demo.ts \
 	test/test.ts
 
-EXTRA_SCRIPTS =  \
+EXTRA_SCRIPTS = \
 	src/vert.glsl \
 	src/frag.glsl
 
