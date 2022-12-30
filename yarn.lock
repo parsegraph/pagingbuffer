@@ -4043,10 +4043,10 @@ parse5@6.0.1:
   resolved "https://registry.yarnpkg.com/parse5/-/parse5-6.0.1.tgz#e1a1c085c569b3dc08321184f19a39cc27f7c30b"
   integrity sha512-Ofn/CTFzRGTTxwpNEs9PP93gXShHcTq255nzRYSKe8AkVpZY7e1fpmTfOyoIvjP5HG7Z2ZM7VS9PPhQGW2pOpw==
 
-parsegraph-color@^1.4.8:
-  version "1.4.8"
-  resolved "https://registry.yarnpkg.com/parsegraph-color/-/parsegraph-color-1.4.8.tgz#019920c2c9d3a6f320ec409c1c22b3a770879388"
-  integrity sha512-e0nDzZJXQCH1BXCahSfyiDMdd8cU5PcOD/IuUn0005EsSB+U5YT7Itg6LOlVGdor1kOnOMz5d2Pe+jQ+6XHkzg==
+parsegraph-color@^1.4.10:
+  version "1.4.10"
+  resolved "https://registry.yarnpkg.com/parsegraph-color/-/parsegraph-color-1.4.10.tgz#5eaa88e69e3836ffea7dfa44453e1321ce2daeba"
+  integrity sha512-w0utQ0RS04s8KKkrtfeodbuvUrdUdzDr4lpFsK0YVf5USCO6f0m5rxHR/6DpcyDr3uZ+AKgtar3ALTY7iV94fQ==
 
 path-exists@^3.0.0:
   version "3.0.0"
